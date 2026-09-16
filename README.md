@@ -2,11 +2,26 @@
 
 UAV-Assisted Agricultural Pest Surveillance is a deep learning-powered system for detecting and monitoring crop pests using aerial imagery captured by drones. Leveraging YOLO-based object detection, it enables day and night pest surveillance to support precision agriculture and reduce crop losses.
 
+## 📊 Project Overview & Progress
+
+> **Completion Status:** ~50% Complete  
+> **Repository:** [ashcodes28/FALCON](https://github.com/ashcodes28/FALCON)
+
+This project integrates deep learning detection models with custom UAV hardware design to automate field scouting.
+
+* **Baseline Detectors:** Evaluated single-modality YOLOv8 (85.5% accuracy) and lightweight YOLOv11n for edge deployment.
+* **System Design:** Completed CAD modeling for the UAV airframe, camera gimbal, and compute payload bay.
+* **In Progress:** Addressing confusion-class error trends through targeted data augmentation, class re-balancing, and super-resolution pre-processing.
+
+---
+
 ## 📚 Documentation
 
-🔗 [Literature Review & Patent Survey](https://github.com/InvictusRex/UAV-Assisted-Agricultural-Pest-Surveillance/blob/main/Literature%20Review%20%26%20Patent%20Survey.md)
+🔗 [Literature Review & Patent Survey](https://github.com/ashcodes28/FALCON/blob/main/Literature%20Review%20%26%20Patent%20Survey.md)
 
-📄 [License](https://github.com/InvictusRex/UAV-Assisted-Agricultural-Pest-Surveillance/blob/main/LICENSE)
+📄 [License](https://github.com/ashcodes28/FALCON/blob/main/LICENSE)
+
+---
 
 ## 📖 Reference Research Papers
 
@@ -19,6 +34,8 @@ UAV-Assisted Agricultural Pest Surveillance is a deep learning-powered system fo
 - [Design and Development of Agricultural Drone for Precision Fertilizer Application](https://doi.org/10.1016/j.rineng.2025.106267)
 - [Reducing Energy and Environmental Footprint in Agriculture: Drone Spraying vs. Conventional Methods](https://doi.org/10.1371/journal.pone.0323779)
 
+---
+
 ## 🏛️ Reference Patents
 
 - [US 2017/0231213 A1 - Pest Abatement Utilizing an Aerial Drone](https://patents.google.com/patent/US20170231213A1/en)
@@ -30,20 +47,29 @@ UAV-Assisted Agricultural Pest Surveillance is a deep learning-powered system fo
 - [JP 3217561 U - Pest Control Drone Utility Model](https://patents.google.com/patent/JP3217561U/en)
 - [KR 20230062713 A - Smart Pest Control Drone System](https://patents.google.com/patent/KR20230062713A/en)
 
-## YOLO v8 Training Results on Pests Dataset
+---
 
-YOLO v8 was trained on the pests dataset with an 85.5 percent accuracy. The confusion matrix is below
-<img width="3000" height="2250" alt="image" src="https://github.com/user-attachments/assets/9d30e0cd-8179-401b-99f6-348e2b6ea6f1" />
-<img width="3000" height="2250" alt="image" src="https://github.com/user-attachments/assets/5ff4e7eb-e6cb-48c2-bd0c-4cf2f5413c20" />
+## 🔬 Detector Baseline & Performance
 
-### High accuracy classes:
-- Moth (0.99), Snail (1.00), Wasp (0.97), Weevil (1.00), and Ants (0.87) are classified with strong precision.
+Evaluation was conducted using both **YOLOv8** and **YOLOv11n** baseline models. Overall classification accuracy reached **85.5%** on the annotated dataset.
 
-### Moderate/Confused classes:
-- Beetle, Caterpillar, and Earwig show noticeable misclassifications, often being confused with each other.
-- Grasshopper and Slug exhibit cross-class confusion (e.g., slug ↔ earthworms at 0.29).
+### High Accuracy Classes:
+- **Snail** (1.00), **Weevil** (1.00), **Moth** (0.99), **Wasp** (0.97), and **Ants** (0.87) are classified with high precision.
 
-### Common confusion trends:
-- Beetles and Wasps are frequently mistaken for each other.
-- Caterpillar overlaps with Bees and Beetles.
-- Earwigs and Earthworms show high mutual misclassification.
+### Confusion Trends & Limitations:
+- **Beetle**, **Caterpillar**, and **Earwig** show noticeable misclassifications due to small object boundaries and texture similarities.
+- Cross-class confusion is observed between Beetles ↔ Wasps, Caterpillars ↔ Bees/Beetles, and Slugs ↔ Earthworms.
+
+---
+
+## 🛠️ System Roadmap & Remaining Work
+
+- [x] Literature review and patent landscape mapping
+- [x] Dataset curation & annotation
+- [x] Baseline YOLOv8 & YOLOv11n evaluation
+- [x] UAV frame & payload bay CAD design
+- [ ] Confusion-class data augmentation & re-balancing *(In Progress)*
+- [ ] Selective ResNet super-resolution module for low-confidence regions
+- [ ] Multimodal RGB + Thermal attention fusion pipeline
+- [ ] Onboard edge deployment & flight controller integration
+- [ ] Field trials and performance validation
