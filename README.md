@@ -107,6 +107,16 @@ Evaluation was conducted using both YOLOv8 and YOLOv11n baseline models (`best.p
 
 ---
 
+## 📂 Datasets & Benchmarks
+
+The vision models in FALCON are trained and evaluated across standard entomological and aerial biodiversity benchmarks:
+
+* [Agricultural Pests Image Dataset (Kaggle)](https://www.kaggle.com/datasets/fihmeh/agricultural-pests-image-dataset): Primary source for the 12-class micro-fauna dataset (Ants, Bees, Beetles, Caterpillars, Earthworms, Earwigs, Grasshoppers, Moths, Slugs, Snails, Wasps, Weevils), compiled for object detection and guild classification.
+* [IP102 Insect Recognition Benchmark (CVPR)](https://github.com/xpwu95/IP102): Large-scale reference benchmark with over 75,000 images spanning 102 categories, utilized for pretraining feature extractors across diverse insect life stages.
+* [AIDN Aerial Insect Dataset (Remote Sensing)](https://doi.org/10.3390/rs17060962): Aerial invertebrate survey dataset specifically designed for tiny object detection and multi-scale feature calibration in UAV biodiversity monitoring.
+
+---
+
 ## System Roadmap
 
 - [x] Technical literature and patent landscape mapping

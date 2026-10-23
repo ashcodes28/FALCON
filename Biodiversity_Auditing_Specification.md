@@ -115,3 +115,5 @@ An unmanned aerial biodiversity auditing system comprising:
 - Alsadik, B., Ellsäßer, F. J., Awawdeh, M., et al. (2024). *Remote Sensing Technologies Using UAVs for Monitoring.* Remote Sensing, 16(23), 4371.
 - Shannon, C. E. (1948). *A Mathematical Theory of Communication.* Bell System Technical Journal, 27(3), 379–423.
 - Simpson, E. H. (1949). *Measurement of Diversity.* Nature, 163, 688.
+- Wu, X., Zhan, C., Lai, Y. K., Cheng, M. M., & Yang, J. (2019). *IP102: A Large-Scale Benchmark Dataset for Insect Pest Recognition.* IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 8788–8797. [https://github.com/xpwu95/IP102](https://github.com/xpwu95/IP102)
+- *Agricultural Pests Image Dataset (12-class micro-fauna benchmark).* Kaggle Datasets. [https://www.kaggle.com/datasets/fihmeh/agricultural-pests-image-dataset](https://www.kaggle.com/datasets/fihmeh/agricultural-pests-image-dataset)
