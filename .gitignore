@@ -1,0 +1,16 @@
+# Environments
+venv/
+.venv/
+__pycache__/
+
+# Dataset & local assets
+data/
+*.zip
+
+# Large weights (keep local)
+*.pt
+*.onnx
+
+# OS files
+.DS_Store
+Thumbs.db
