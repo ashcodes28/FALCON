@@ -1,17 +1,28 @@
 import cv2
-from ultralytics import YOLO
 import torch
-import time
+from ultralytics import YOLO
+
+from biodiversity_engine import (
+    CLASS_NAMES,
+    GUILD_POLLINATORS,
+    GUILD_BIOCONTROL,
+    GUILD_SOIL_DETRITIVORES,
+    GUILD_HERBIVORES,
+)
 
 # === CONFIG ===
-MODEL_PATH = r'../embed/best.pt'  # <-- change if needed
-VIDEO_PATH = r'../embed/Lab_Test.mp4'  # <-- your input video
+MODEL_PATH = r'../embed/best.pt'
+VIDEO_PATH = r'../embed/Lab_Test.mp4'
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-CONFIDENCE_THRESHOLD = 0.2
+CONFIDENCE_THRESHOLD = 0.25
+
+# Guild isolation mode: 'ALL', 'POLLINATORS', 'BIOCONTROL', 'SOIL_FAUNA', 'HERBIVORES'
+ISOLATION_GUILD = 'ALL'
 
 # === LOAD MODEL ===
-print(f'Using device: {DEVICE}')
+print(f"Using device: {DEVICE}")
 model = YOLO(MODEL_PATH).to(DEVICE)
+names = model.names if hasattr(model, 'names') else CLASS_NAMES
 
 # === LOAD VIDEO ===
 cap = cv2.VideoCapture(VIDEO_PATH)
@@ -19,19 +30,12 @@ if not cap.isOpened():
     print("Error: Could not open video.")
     exit()
 
-# === MAIN LOOP ===
-TARGET_CLASS = "Ants"
-REMOVE_CLASS = "Beetles"
-BOOST_FACTOR = 10
-
-names = model.names
-
 while True:
     ret, frame = cap.read()
     if not ret:
         break
 
-    results = model(frame, device=DEVICE)
+    results = model(frame, device=DEVICE, verbose=False)
     r = results[0]
 
     filtered_indices = []
@@ -41,27 +45,40 @@ while True:
         confs = r.boxes.conf.cpu().numpy()
 
         for i, (cls_id, conf) in enumerate(zip(classes, confs)):
-            cls_name = names[int(cls_id)]
+            cls_name = names.get(int(cls_id), str(int(cls_id)))
 
-            # 1) Remove Beetles completely
-            if cls_name == REMOVE_CLASS:
+            if conf < CONFIDENCE_THRESHOLD:
                 continue
 
-            # 2) Boost Ants confidence before filtering
-            if cls_name == TARGET_CLASS:
-                conf *= BOOST_FACTOR
-                conf = min(conf, 1.0)
+            # Optional Guild-specific isolation filter
+            if ISOLATION_GUILD == 'POLLINATORS' and cls_name not in GUILD_POLLINATORS:
+                continue
+            elif ISOLATION_GUILD == 'BIOCONTROL' and cls_name not in GUILD_BIOCONTROL:
+                continue
+            elif ISOLATION_GUILD == 'SOIL_FAUNA' and cls_name not in GUILD_SOIL_DETRITIVORES:
+                continue
+            elif ISOLATION_GUILD == 'HERBIVORES' and cls_name not in GUILD_HERBIVORES:
+                continue
 
-            # 3) Keep only detections that pass threshold
-            if conf > CONFIDENCE_THRESHOLD:
-                filtered_indices.append(i)
+            filtered_indices.append(i)
 
-        # Apply indexing without modifying conf tensor
         r.boxes = r.boxes[filtered_indices]
 
-    # Draw filtered results
     annotated_frame = r.plot()
-    cv2.imshow("YOLO Detection", annotated_frame)
+    cv2.putText(
+        annotated_frame,
+        f"Guild Filter: {ISOLATION_GUILD} | Detections: {len(filtered_indices)}",
+        (15, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.7,
+        (0, 255, 120),
+        2,
+        cv2.LINE_AA,
+    )
+    cv2.imshow("FALCON Guild Isolation Lab Test", annotated_frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+cap.release()
+cv2.destroyAllWindows()
