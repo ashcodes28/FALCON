@@ -23,9 +23,9 @@ Rather than treating all invertebrates as uniform targets, FALCON organizes dete
 
 ---
 
-## 3. Mathematical Verification Metrics
+## 3. Mathematical Verification Metrics & Green Credit Units
 
-To provide standardized outputs for compliance bodies, FALCON calculates four quantitative metrics along every survey transect:
+To provide standardized outputs for compliance bodies, FALCON calculates quantitative metrics along every survey transect:
 
 ### 3.1 Shannon-Wiener Faunal Diversity Index ($H'$)
 Measures species richness and proportion evenness across observed invertebrates:
@@ -46,6 +46,28 @@ where $\epsilon = 10^{-6}$ prevents division by zero. A rising PPR indicates bio
 Assesses macro-invertebrate soil surface activity along low-altitude survey waypoints:
 $$\text{Score}_{\text{soil}} = 1.5 \cdot N_{\text{Earthworms}} + 0.5 \cdot (N_{\text{Slugs}} + N_{\text{Snails}})$$
 Serves as an empirical indicator of topsoil vitality, moisture retention, and structural biological health.
+
+### 3.5 Standardized Green Credit Unit (GCU) Formulation & Accounting
+To generate certified, fungible assets recognized by voluntary environmental markets and compliance registries (e.g., Verra Nature Framework, UK Biodiversity Net Gain), FALCON translates multi-guild observations into Green Credit Units (GCUs):
+
+1. **Ecological Quality Score ($Q$):**
+   $$Q = 0.40 \cdot \left(\frac{H'}{\ln 12}\right) + 0.35 \cdot \min\left(\frac{\text{PPR}}{2.0}, 1.0\right) + 0.25 \cdot \min\left(\frac{\text{Score}_{\text{soil}}}{10}, 1.0\right)$$
+   Where $Q \in [0.0, 1.0]$ represents the composite biological health of the surveyed tract.
+
+2. **Net Ecological Uplift ($\Delta Q$):**
+   $$\Delta Q = \max(Q - Q_{\text{baseline}}, 0.0)$$
+   Where $Q_{\text{baseline}}$ represents the historical or conventional degraded agricultural baseline (defaulting to 0.20 for conventional monoculture).
+
+3. **Tradeable Credit Issuance:**
+   $$\text{Gross GCU} = \text{Surveyed Area (ha)} \times Q$$
+   $$\text{Net Awarded GCU} = \text{Surveyed Area (ha)} \times \Delta Q$$
+
+4. **Accreditation Tiers:**
+   * **Tier-AAA ($Q \ge 0.80$):** Exemplary Biodiversity Net-Gain.
+   * **Tier-AA ($0.65 \le Q < 0.80$):** High Ecological Integrity.
+   * **Tier-A ($0.50 \le Q < 0.65$):** Moderate Ecological Value.
+   * **Tier-B ($0.35 \le Q < 0.50$):** Early Regenerative Transition.
+   * **Tier-C ($Q < 0.35$):** Depleted / Sub-Baseline Monoculture.
 
 ---
 
@@ -69,19 +91,19 @@ To prevent fraudulent manipulation of biodiversity data for credit accreditation
 [Genesis Block]
        │
        ▼  (Hash SHA-256)
-[Block 1] ─── Payload: Sample ID, Timestamp, GPS (Lat, Lon, Alt), Counts, Metrics (H', PPR)
+[Block 1] ─── Payload: Sample ID, Timestamp, GPS (Lat, Lon, Alt), Counts, Metrics (H', PPR, GCU)
        │
        ▼  (Hash SHA-256: previous_hash + payload)
-[Block 2] ─── Payload: Sample ID, Timestamp, GPS (Lat, Lon, Alt), Counts, Metrics (H', PPR)
+[Block 2] ─── Payload: Sample ID, Timestamp, GPS (Lat, Lon, Alt), Counts, Metrics (H', PPR, GCU)
        │
        ▼
-[Inspection Certificate & GeoJSON Feature Collection]
+[Inspection Certificate (Certified GCUs) & GeoJSON Feature Collection]
 ```
 
 * **Sequential Chaining:** Every observation block contains the cryptographic SHA-256 hash of the preceding block, creating a tamper-evident audit record.
 * **Tamper Detection:** Modifying counts, metrics, or coordinates in any historical block invalidates the downstream hash chain.
 * **Export Standards:**
-  * `audit_certificate.json`: Comprehensive report containing total sample counts, guild breakdowns, cumulative $H'$, genesis/final hash proofs, and validator signatures.
+  * `audit_certificate.json`: Comprehensive report containing total sample counts, guild breakdowns, cumulative $H'$, certified GCU accounting, genesis/final hash proofs, and validator signatures.
   * `audit_transect.geojson`: Georeferenced Point feature collection compatible with QGIS, ArcGIS, and agricultural management platforms.
 
 ---
@@ -94,8 +116,9 @@ A computer-implemented method for autonomous verification and certification of t
 2. Capturing high-resolution downward-facing image frames continuously synchronized with geographic coordinates and timestamps;
 3. Executing a lightweight convolutional or transformer-based deep learning detector on an onboard edge companion computer to identify and localize invertebrate specimens across multiple functional ecological guilds, wherein said guilds include at least pollinators, biocontrol predators, and soil detritivores;
 4. Deriving quantitative ecological indicators from said detections, including a multi-guild faunal diversity index and a pollinator-to-herbivore ratio;
-5. Generating a tamper-evident cryptographic ledger block that combines the raw detections, derived ecological indicators, geographic coordinates, and a hash of the preceding ledger block; and
-6. Producing a verifiable biodiversity audit certificate and geospatial map for submission to an environmental credit accreditation registry.
+5. Deriving a standardized Green Credit Unit (GCU) output based on a surveyed land area and an ecological uplift metric relative to a baseline threshold;
+6. Generating a tamper-evident cryptographic ledger block that combines the raw detections, derived ecological indicators, geographic coordinates, and a hash of the preceding ledger block; and
+7. Producing a verifiable biodiversity audit certificate and geospatial map for submission to an environmental credit accreditation registry.
 
 ### Independent System Claim 2
 An unmanned aerial biodiversity auditing system comprising:
@@ -104,6 +127,7 @@ An unmanned aerial biodiversity auditing system comprising:
 3. An onboard edge computing processor in data communication with the camera gimbal and flight controller, configured to:
    * Process aerial frames in real time to classify invertebrate taxa into ecological guilds;
    * Calculate localized Shannon-Wiener faunal diversity scores and guild abundance ratios;
+   * Quantify certified Green Credit Units based on surveyed geographic area and verified ecological uplift;
    * Compile successive observation records into a cryptographically linked SHA-256 blockchain or ledger; and
    * Transmit signed audit manifests to an external ground station or verification clearinghouse.
 

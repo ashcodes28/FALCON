@@ -9,6 +9,7 @@ from biodiversity_engine import (
     AerialSample,
     BiodiversityAuditLedger,
     calculate_faunal_indices,
+    calculate_green_credits,
     CLASS_NAMES,
 )
 
@@ -18,9 +19,16 @@ VIDEO_PATH = r'../embed/test.mp4'
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 CONFIDENCE_THRESHOLD = 0.25
 PARCEL_ID = "PARCEL-DEMO-001"
+AREA_HECTARES = 10.0
+BASELINE_SCORE = 0.20  # Standard agricultural baseline
 
 # === INITIALIZE AUDIT LEDGER ===
-ledger = BiodiversityAuditLedger(parcel_id=PARCEL_ID, operator_id="FALCON_UAV_PILOT")
+ledger = BiodiversityAuditLedger(
+    parcel_id=PARCEL_ID,
+    area_hectares=AREA_HECTARES,
+    baseline_score=BASELINE_SCORE,
+    operator_id="FALCON_UAV_PILOT",
+)
 
 # === LOAD MODEL ===
 print(f"Using device: {DEVICE}")
@@ -83,14 +91,20 @@ while True:
     # Render frame with bounding boxes
     annotated_frame = r.plot()
 
-    # Overlay live Ecological HUD
-    instant_metrics = calculate_faunal_indices(current_detections)
+    # Overlay live Ecological & Green Credit HUD
+    instant_faunal = calculate_faunal_indices(current_detections)
+    instant_gcu = calculate_green_credits(
+        instant_faunal,
+        area_hectares=AREA_HECTARES,
+        baseline_score=BASELINE_SCORE,
+    )
+
     hud_lines = [
-        f"FALCON Ecological Audit | Parcel: {PARCEL_ID}",
-        f"Shannon Diversity (H'): {instant_metrics['shannon_index']:.3f}",
-        f"Pollinator-to-Pest Ratio: {instant_metrics['pollinator_to_pest_ratio']:.2f}",
-        f"Soil Fauna Score: {instant_metrics['soil_bioturbation_score']:.1f}",
-        f"Audit Ledger Blocks: {len(ledger.blocks)} | Valid: {ledger.verify_integrity()}",
+        f"FALCON Green Credit Audit | Parcel: {PARCEL_ID} ({AREA_HECTARES} ha)",
+        f"Certified Credits: {instant_gcu['net_green_credits']:.2f} GCU | {instant_gcu['credit_tier'].split(' ')[0]}",
+        f"Quality Score (Q): {instant_gcu['ecological_quality_score']:.3f} | Net Uplift: +{instant_gcu['net_uplift']:.3f}",
+        f"Shannon Index (H'): {instant_faunal['shannon_index']:.2f} | PPR: {instant_faunal['pollinator_to_pest_ratio']:.2f}",
+        f"Audit Blocks: {len(ledger.blocks)} | SHA-256 Ledger: {'VALID' if ledger.verify_integrity() else 'CORRUPT'}",
     ]
 
     y_offset = 30
@@ -100,14 +114,14 @@ while True:
             line,
             (15, y_offset),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
+            0.55,
             (0, 255, 120),
             2,
             cv2.LINE_AA,
         )
         y_offset += 24
 
-    cv2.imshow("FALCON - Terrestrial Biodiversity Audit", annotated_frame)
+    cv2.imshow("FALCON - Terrestrial Biodiversity & Green Credit Audit", annotated_frame)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
@@ -123,5 +137,8 @@ if ledger.blocks:
     with open("audit_transect.geojson", "w", encoding="utf-8") as f:
         import json
         json.dump(ledger.export_geojson(), f, indent=2)
+
+    accounting = cert["green_credit_accounting"]
     print("\n[FALCON] Exported audit_certificate.json and audit_transect.geojson")
-    print(f"[FALCON] Chain integrity: {cert['chain_valid']} | Final Hash: {cert['ledger_final_hash']}")
+    print(f"[FALCON] Certified Green Credits: {accounting['net_green_credit_units_awarded']:.2f} GCU ({accounting['accreditation_tier']})")
+    print(f"[FALCON] Chain integrity: {cert['cryptographic_verification']['ledger_chain_valid']} | Final Hash: {cert['cryptographic_verification']['final_block_hash']}")

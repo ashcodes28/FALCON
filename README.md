@@ -2,7 +2,7 @@
 
 FALCON is an autonomous unmanned aerial system (UAS) for verifying and auditing terrestrial biodiversity, soil faunal indicators, and ecological balance in support of biodiversity net-gain (BNG), regenerative agriculture compliance, and carbon-plus credit certification.
 
-By deploying lightweight vision models (YOLOv11n) across aerial flight transects, FALCON classifies beneficial insects, pollinators, and herbivores simultaneously, transforming raw aerial imagery into tamper-evident biodiversity audit reports.
+By deploying lightweight vision models (YOLOv11n) across aerial flight transects, FALCON classifies beneficial insects, pollinators, and herbivores simultaneously, transforming raw aerial imagery into tamper-evident biodiversity audit reports and tradeable Green Credit Units (GCUs).
 
 ---
 
@@ -30,17 +30,18 @@ flowchart TD
         DETS --> G4["Herbivore Pressure (Weevils, Caterpillars, etc.)"]
     end
 
-    subgraph ENGINE["4. Biodiversity Engine"]
+    subgraph ENGINE["4. Biodiversity & Green Credit Engine"]
         G1 & G2 & G3 & G4 --> CALC["Biodiversity Calculation Engine"]
         CALC --> M1["Shannon-Wiener Index (H')"]
         CALC --> M2["Pollinator-to-Pest Ratio (PPR)"]
         CALC --> M3["Soil Bioturbation Score"]
+        M1 & M2 & M3 --> GCU["Green Credit Calculator (GCU = Area × ΔQ)"]
     end
 
     subgraph LEDGER["5. Cryptographic Verification & Export"]
-        GNSS & M1 & M2 & M3 --> BLOCK["SHA-256 Chained Audit Ledger"]
-        BLOCK --> CERT["audit_certificate.json"]
-        BLOCK --> GEO["audit_transect.geojson"]
+        GNSS & GCU --> BLOCK["SHA-256 Chained Audit Ledger"]
+        BLOCK --> CERT["audit_certificate.json (Certified GCUs)"]
+        BLOCK --> GEO["audit_transect.geojson (Hotspot Map)"]
     end
 ```
 
@@ -57,6 +58,7 @@ flowchart TD
 * **Airframe & Payload CAD:** Completed 3D structural CAD modeling for the UAV airframe, camera gimbal, and compute payload bay housing the companion edge computer.
 * **Architecture & Specification:** Formulated technical specifications and patent claim outlines for autonomous terrestrial biodiversity auditing.
 * **Faunal Index Engine:** Built `src/biodiversity_engine.py` to calculate the Shannon-Wiener Faunal Diversity Index, Simpson's index, Pollinator-to-Pest Ratio (PPR), and soil faunal bioturbation indicators.
+* **Green Credit Unit (GCU) Calculator:** Added formal ecological quality scoring ($Q$), baseline comparison ($\Delta Q$), and net Green Credit Units per hectare with accreditation tiers (Tier-AAA to Tier-C).
 * **Cryptographic Audit Ledger:** Implemented SHA-256 chained audit logs ensuring tamper-evident inspection records for credit underwriters.
 
 ### Remaining Phase (50% - 100% Phase)
@@ -95,6 +97,20 @@ $$\text{PPR} = \frac{N_{\text{Bees}} + N_{\text{Wasps}}}{N_{\text{Weevils}} + N_
 Calculates ground-level activity rates of earthworms and detritivores along low-altitude survey waypoints to verify soil biological vitality without destructive sampling:
 $$\text{Score}_{\text{soil}} = 1.5 \cdot N_{\text{Earthworms}} + 0.5 \cdot (N_{\text{Slugs}} + N_{\text{Snails}})$$
 
+### 4. Standardized Green Credit Units (GCUs) & Accreditation Tiers
+Combines faunal indicators and surveyed acreage into an accredited, tradeable ecological asset:
+$$\text{Ecological Quality Score } Q = 0.40 \cdot \left(\frac{H'}{\ln 12}\right) + 0.35 \cdot \min\left(\frac{\text{PPR}}{2.0}, 1.0\right) + 0.25 \cdot \min\left(\frac{\text{Score}_{\text{soil}}}{10}, 1.0\right)$$
+$$\text{Net Ecological Uplift } \Delta Q = \max(Q - Q_{\text{baseline}}, 0.0)$$
+$$\text{Net Green Credit Units (GCUs)} = \text{Surveyed Area (Hectares)} \times \Delta Q$$
+
+| Quality Score ($Q$) | Accreditation Tier | Market Description |
+| :--- | :--- | :--- |
+| **$Q \ge 0.80$** | **Tier-AAA** | Exemplary Biodiversity Net-Gain |
+| **$0.65 \le Q < 0.80$** | **Tier-AA** | High Ecological Integrity |
+| **$0.50 \le Q < 0.65$** | **Tier-A** | Moderate Ecological Value |
+| **$0.35 \le Q < 0.50$** | **Tier-B** | Early Regenerative Transition |
+| **$Q < 0.35$** | **Tier-C** | Depleted / Sub-Baseline Monoculture |
+
 ---
 
 ## Detector Baseline & Performance
@@ -124,8 +140,9 @@ The vision models in FALCON are trained and evaluated across standard entomologi
 - [x] Baseline YOLOv8 & YOLOv11n training and validation
 - [x] UAV frame, gimbal, and payload bay CAD design
 - [x] Automated biodiversity index calculation engine (`src/biodiversity_engine.py`)
+- [x] Standardized Green Credit Unit (GCU) calculator and tier accounting
 - [x] Cryptographic audit-trail logging with SHA-256 verification
-- [x] Real-time Ecological HUD streaming (`src/detection.py`)
+- [x] Real-time Ecological & Green Credit HUD streaming (`src/detection.py`)
 - [ ] MAVLink waypoint integration and dynamic transect flight planning
 - [ ] Onboard companion computer deployment (Jetson Orin Nano)
 - [ ] Field validation on certified regenerative agricultural plots
