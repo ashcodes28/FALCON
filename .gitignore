@@ -14,3 +14,7 @@ data/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Audit runtime exports
+audit_certificate.json
+audit_transect.geojson

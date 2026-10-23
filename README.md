@@ -133,6 +133,28 @@ The vision models in FALCON are trained and evaluated across standard entomologi
 
 ---
 
+## 🧪 How to Test
+
+### 1. Simulated Transect & Green Credit Audit (Zero Dependencies)
+Runs a 5-waypoint autonomous drone survey across a 15-hectare parcel, computing $Q$, net uplift, accredited GCUs, and generating `audit_certificate.json` and `audit_transect.geojson`:
+```bash
+python src/simulate_audit.py
+```
+
+### 2. Engine Verification & Tamper-Detection Self-Test
+Runs the assert-based test suite checking index math, Green Credit scoring, and cryptographic hash chain invalidation upon tampering:
+```bash
+python src/biodiversity_engine.py
+```
+
+### 3. Live Video / Camera Stream with HUD Overlay
+Runs the YOLOv11n model on an aerial video stream or webcam with the live Ecological & Green Credit HUD:
+```bash
+python src/detection.py
+```
+
+---
+
 ## System Roadmap
 
 - [x] Technical literature and patent landscape mapping
@@ -143,6 +165,7 @@ The vision models in FALCON are trained and evaluated across standard entomologi
 - [x] Standardized Green Credit Unit (GCU) calculator and tier accounting
 - [x] Cryptographic audit-trail logging with SHA-256 verification
 - [x] Real-time Ecological & Green Credit HUD streaming (`src/detection.py`)
+- [x] Simulated flight mission & certificate generator (`src/simulate_audit.py`)
 - [ ] MAVLink waypoint integration and dynamic transect flight planning
 - [ ] Onboard companion computer deployment (Jetson Orin Nano)
 - [ ] Field validation on certified regenerative agricultural plots
@@ -153,6 +176,7 @@ The vision models in FALCON are trained and evaluated across standard entomologi
 
 * [Biodiversity Auditing Specification](Biodiversity_Auditing_Specification.md)
 * [Biodiversity Engine](src/biodiversity_engine.py)
+* [Simulated Audit Runner](src/simulate_audit.py)
 * [Live Detection & Audit Script](src/detection.py)
 * [Guild Isolation Lab Test](src/lab_test_detection.py)
 * [Airframe CAD Visuals](CAD%20Images/)
