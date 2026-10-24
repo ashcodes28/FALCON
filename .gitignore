@@ -18,3 +18,6 @@ Thumbs.db
 # Audit runtime exports
 audit_certificate.json
 audit_transect.geojson
+real_audit_certificate.json
+real_audit_transect.geojson
+_temp_report.pdf

@@ -62,6 +62,7 @@ flowchart TD
 * **Green Credit Unit (GCU) Calculator:** Added formal ecological quality scoring ($Q$), baseline comparison ($\Delta Q$), and net Green Credit Units per hectare with accreditation tiers (Tier-AAA to Tier-C).
 * **Cryptographic Audit Ledger:** Implemented SHA-256 chained audit logs ensuring tamper-evident inspection records for credit underwriters, exporting `audit_certificate.json` and `audit_transect.geojson`.
 * **Autonomous Simulation Suite:** Implemented `src/simulate_audit.py` to simulate multi-waypoint transects over agricultural parcels, verifying end-to-end certification without hardware dependencies.
+* **Real Dataset Audit Pipeline:** Implemented `src/real_audit.py` to run batch audits directly against real validation image datasets.
 * **Live Ecological HUD:** Integrated live inference HUD streaming in `src/detection.py` displaying real-time diversity metrics, certified credits, and blockchain integrity.
 
 ---
@@ -150,6 +151,12 @@ Runs the YOLOv11n model on an aerial video stream or webcam with the live Ecolog
 python src/detection.py
 ```
 
+### 4. Batch Audit on Real Dataset Images
+Runs the YOLOv11n model over a directory of validation images (`data/valid/images/`) and generates `real_audit_certificate.json`:
+```bash
+python src/real_audit.py
+```
+
 ---
 
 ## System Roadmap & Deliverables (100% Completed)
@@ -163,6 +170,7 @@ python src/detection.py
 - [x] Cryptographic audit-trail logging with SHA-256 verification
 - [x] Real-time Ecological & Green Credit HUD streaming (`src/detection.py`)
 - [x] Simulated flight mission & certificate generator (`src/simulate_audit.py`)
+- [x] Batch execution pipeline for real validation image datasets (`src/real_audit.py`)
 - [x] Multi-waypoint transect validation and Green Credit certification trial
 - [x] Final 100% Implementation Report ([PDF](FALCON_100_Percent_Implementation_Report.pdf) & [Markdown](FALCON_100_Percent_Implementation_Report.md))
 
@@ -175,6 +183,7 @@ python src/detection.py
 * [Biodiversity Auditing Specification](Biodiversity_Auditing_Specification.md)
 * [Biodiversity Engine](src/biodiversity_engine.py)
 * [Simulated Audit Runner](src/simulate_audit.py)
+* [Real Dataset Audit Runner](src/real_audit.py)
 * [Live Detection & Audit Script](src/detection.py)
 * [Guild Isolation Lab Test](src/lab_test_detection.py)
 * [PDF Report Compiler Script](generate_pdf_report.py)
