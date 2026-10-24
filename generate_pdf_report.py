@@ -30,12 +30,19 @@ def build_pdf():
     md = markdown_it.MarkdownIt("commonmark").enable("table")
     raw_body_html = md.render(body_md)
 
-    # Convert equation blockquotes into styled equation containers
+    # Convert equation blockquotes into styled equation containers (neutral styling, no green borders)
     cleaned_html = re.sub(
         r'<blockquote>\s*<p>(<strong>Equation\s+8\.[0-9].*?)</p>\s*</blockquote>',
         r'<div class="equation-container">\1</div>',
         raw_body_html,
         flags=re.DOTALL
+    )
+
+    # Insert page break before Section 3 so Table 1 starts cleanly at the top of its page
+    cleaned_html = re.sub(
+        r'<h2>3\.\s*Overall Project Implementation Snapshot</h2>',
+        r'<div style="page-break-before: always;"></div><h2>3. Overall Project Implementation Snapshot</h2>',
+        cleaned_html
     )
 
     # Style HTML matching the example report's exact typography
@@ -59,7 +66,7 @@ def build_pdf():
             font-size: 16pt;
             font-weight: bold;
             color: #000000;
-            margin-top: 20pt;
+            margin-top: 18pt;
             margin-bottom: 8pt;
             page-break-after: avoid;
         }}
@@ -103,11 +110,10 @@ def build_pdf():
         }}
         th, td {{
             border: 0.5pt solid #c0c0c0;
-            padding: 5pt 7pt;
+            padding: 4.5pt 6.5pt;
             text-align: left;
         }}
         th {{
-            background-color: #2e5339;
             color: #ffffff;
             font-weight: bold;
         }}
@@ -115,10 +121,9 @@ def build_pdf():
             background-color: #f7faf7;
         }}
         .equation-container {{
-            background-color: #f9fbf9;
-            border: 0.75pt solid #2e5339;
-            border-left: 3pt solid #2e5339;
-            padding: 7pt 10pt;
+            background-color: #fcfcfc;
+            border: 0.5pt solid #d8d8d8;
+            padding: 6pt 10pt;
             margin: 8pt 0 10pt 0;
             font-size: 10.5pt;
             page-break-inside: avoid;
@@ -132,7 +137,6 @@ def build_pdf():
         pre {{
             background-color: #fbfbfb;
             border: 0.5pt solid #d0d0d0;
-            border-left: 2.5pt solid #2e5339;
             padding: 6pt 8pt;
             font-family: "Courier New", Courier, monospace;
             font-size: 8.5pt;
@@ -169,7 +173,7 @@ def build_pdf():
     body_doc = pymupdf.open(temp_body_pdf)
     num_body_pages = len(body_doc)
 
-    # Master Table of Contents entries to detect in the body
+    # Master Table of Contents schema
     toc_schema = [
         (1, "1. Executive Summary", "1. Executive Summary"),
         (1, "2. Introduction", "2. Introduction"),
@@ -245,6 +249,20 @@ def build_pdf():
             assigned_page = 3
             
         actual_toc.append((level, title, assigned_page))
+
+    # Apply precise dark forest green table header backgrounds on pages where tables actually exist
+    for p_idx, page in enumerate(body_doc):
+        blocks = page.get_text("blocks")
+        for b in blocks:
+            txt = b[4].strip()
+            if (
+                txt.startswith("Work Package")
+                or txt.startswith("Ecological\nGuild")
+                or txt.startswith("Ecological Guild")
+                or txt.startswith("Quality Score (Q)")
+            ):
+                rect = pymupdf.Rect(72.0, b[1] - 4.5, 540.0, b[3] + 4.5)
+                page.draw_rect(rect, fill=(0.18039, 0.32549, 0.22353), overlay=False)
 
     # Assemble Final Document
     final_doc = pymupdf.open()
