@@ -55,28 +55,28 @@
 
 ## 1. Executive Summary
 
-This report documents the completed 100% implementation of the FALCON autonomous unmanned aerial system (UAS). Originating as an aerial pest surveillance project, FALCON executed an architectural pivot into an autonomous terrestrial biodiversity auditing and green credit issuance platform. The system addresses a fundamental limitation in carbon-plus and Biodiversity Net-Gain (BNG) markets: satellite remote sensing captures only vegetative canopy reflection (NDVI) rather than living biological diversity, while manual ground surveys cannot scale economically across broad agricultural tracts.
+This report documents the completed implementation of the FALCON autonomous unmanned aerial system (UAS). While originally designed for agricultural pest surveillance, the platform was expanded to audit terrestrial invertebrate biodiversity and issue verifiable nature credits. Emerging carbon and Biodiversity Net-Gain (BNG) markets often rely on satellite NDVI data, which tracks canopy density and chlorophyll content but cannot detect living micro-fauna. Ground entomology surveys measure species accurately, but manual sampling is too slow and labor-intensive to scale across commercial acreage.
 
-FALCON integrates custom UAV hardware CAD, lightweight edge computer vision (YOLOv11n operating at 1024×1024 resolution), and an automated mathematical ecology engine. It classifies 12 invertebrate taxa into four functional guilds—pollinators, biocontrol predators, soil detritivores, and herbivores—to compute the Shannon-Wiener Faunal Diversity Index (H'), the Pollinator-to-Pest Ratio (PPR), and a soil bioturbation proxy score. These indices are synthesized into a standardized Ecological Quality Score (Q), benchmarked against pre-intervention degraded baselines (ΔQ), and converted directly into certified Green Credit Units (GCUs).
+FALCON resolves this limitation by pairing low-altitude aerial flight (3–8 m AGL) with edge computer vision (YOLOv11n at 1024×1024 resolution) and an automated ecological calculation engine. The system classifies 12 invertebrate taxa into four functional ecological guilds (pollinators, biocontrol predators, soil detritivores, and herbivores). These counts feed into the Shannon-Wiener Faunal Diversity Index (H'), the Pollinator-to-Pest Ratio (PPR), and an epigeic soil bioturbation score. The engine combines these metrics into a standardized Ecological Quality Score (Q), subtracts a regional degraded monoculture baseline (Q_baseline = 0.20) to calculate net ecological uplift (ΔQ), and converts the uplift into certified Green Credit Units (GCUs) scaled by surveyed acreage.
 
-Every observation waypoint is sealed within a sequential SHA-256 cryptographic blockchain ledger, ensuring tamper-evident data integrity for carbon registries and credit underwriters. Full system validation was achieved through a multi-waypoint flight audit simulation over a 15-hectare parcel, awarding 10.665 net Green Credit Units under a certified Tier-AAA rating.
+Each observation waypoint is recorded in a sequential SHA-256 hash-chained ledger, preventing retroactive modification of audit records. In a five-waypoint flight simulation covering a 15-hectare parcel, the pipeline processed 25 invertebrate observations across 12 taxa, measured a net uplift of +0.711 Delta-Q, and awarded 10.665 net Green Credit Units under a verified Tier-AAA rating.
 
 ---
 
 ## 2. Introduction
 
 ### 2.1 Background and Motivation
-Global environmental markets, corporate sustainability mandates (such as the Taskforce on Nature-related Financial Disclosures, TNFD), and statutory frameworks (such as the UK Biodiversity Net Gain mandate) now assign quantifiable financial value to ecological restoration. Landowners and agricultural enterprises can generate biodiversity credits and carbon-plus premiums by demonstrating verified biological uplift on their land.
+Statutory frameworks like the UK Biodiversity Net Gain (BNG) mandate and voluntary frameworks such as the Taskforce on Nature-related Financial Disclosures (TNFD) establish economic value for verified ecological restoration. Landowners and agricultural enterprises can generate nature credits and carbon premiums when they provide verifiable evidence of biological recovery on their land.
 
-However, the Monitoring, Reporting, and Verification (MRV) of biodiversity faces severe technical barriers. Satellite remote sensing is blind to ground-level micro-fauna and soil invertebrates, while manual surveys by field entomologists are labor-intensive, localized, and prone to sampling variance. Furthermore, self-reported paper claims introduce fraud risk into environmental credit registries. FALCON addresses this bottleneck by deploying an autonomous drone platform that gathers aerial imagery at low altitude (3–8 m), classifies micro-fauna in real time, and logs cryptographically verifiable audit ledgers.
+Monitoring, Reporting, and Verification (MRV) for terrestrial biodiversity has historically encountered practical obstacles. Satellite remote sensing cannot resolve insects or soil organisms, while manual entomological field surveys take substantial time, cost thousands of dollars per transect, and vary between observers. Paper-based reporting also leaves credit underwriters vulnerable to unverifiable claims. FALCON addresses these issues by operating an autonomous multirotor at low altitude (3–8 m AGL) to classify micro-fauna in near real time, logging every observation directly into a cryptographically sealed audit ledger.
 
 ### 2.2 Objectives
-1. Implement a lightweight deep learning detector (YOLOv11n) trained on 1024×1024 resolution to classify 12 ground and foliage invertebrate taxa.
-2. Group detected taxa into functional ecological guilds to quantify ecosystem service delivery rather than treating all invertebrates as uniform targets.
-3. Formulate and implement mathematical indices for faunal biodiversity (H'), pollinator balance (PPR), and soil surface biological health.
-4. Establish an automated Green Credit Unit (GCU) calculation engine translating ecological uplift into tradeable, accredited units.
-5. Engineer a tamper-evident sequential SHA-256 cryptographic audit ledger that exports standardized machine-readable certificates (`audit_certificate.json`) and geospatial vector layers (`audit_transect.geojson`).
-6. Validate the complete end-to-end architecture through unit testing, anti-tamper security checks, and a simulated 15-hectare aerial flight audit.
+1. Deploy a lightweight deep learning detector (YOLOv11n) trained at 1024×1024 resolution to classify 12 ground and foliage invertebrate taxa.
+2. Group detected taxa into four functional ecological guilds to assess pollination, natural pest predation, soil vitality, and herbivore pressure.
+3. Formulate and implement mathematical indices for community diversity (H'), pollinator-to-pest balance (PPR), and upper-soil biological activity.
+4. Construct an automated Green Credit Unit (GCU) calculation engine that converts verified ecological uplift over regional baselines into accredited units.
+5. Engineer a sequential SHA-256 cryptographic audit ledger that exports signed underwriter certificates (`audit_certificate.json`) and GIS-ready vector files (`audit_transect.geojson`).
+6. Validate the complete system architecture through unit test suites, anti-tamper verification checks, and a simulated 15-hectare aerial flight audit.
 
 ### 2.3 Scope of This Final Report
 This document marks the conclusion of the FALCON engineering project, covering all hardware, machine learning, algorithmic, cryptographic, and validation deliverables.
@@ -107,8 +107,8 @@ Every planned work package across the project timeline has reached completion.
 ## 4. Scientific Grounding, Literature & Patent Landscape
 
 ### 4.1 Key Findings from Academic Literature
-* **Small-Object Aerial Invertebrate Localization:** Low-altitude remote sensing studies (such as AIDN, Remote Sensing 2024; Bai et al., 2023) confirm that insects occupy 10×10 to 30×30 pixels in typical frames. Training on 1024×1024 resolution preserves high-frequency edge gradients necessary to distinguish morphologically close taxa.
-* **Limitations of Aerial Plant-Reflectance Indices:** Research confirms that NDVI and multispectral vegetation indices correlate with chlorophyll content but fail to predict invertebrate biodiversity or soil biological respiration (Alsadik et al., 2024). Direct micro-fauna enumeration provides the empirical ground truth required by biodiversity accreditation standards.
+- *Small-object aerial invertebrate localization:* Recent aerial entomology studies (Bai et al., 2023; AIDN, 2024) confirm that insects typically occupy only 10×10 to 30×30 pixels in low-altitude drone imagery. Training detector backbones on high-resolution 1024×1024 inputs preserves the edge gradients and fine texture cues needed to separate visually similar taxa.
+- *Limitations of optical vegetation indices:* While NDVI and related multispectral reflectance metrics track canopy volume and chlorophyll density, they do not correlate reliably with invertebrate species richness or soil biological activity (Alsadik et al., 2024). Direct counts of micro-fauna provide the empirical baseline required by nature credit accreditation bodies.
 
 ### 4.2 Patent Landscape & Novelty Gaps
 Prior agricultural drone patents (e.g., US 10,364,029 B2; US 2017/0231213 A1; KR 20230062713 A) focus on mechanical hardware: spray tanks, nozzle arrays, and chemical delivery valves. Algorithmic methods converting multi-guild micro-fauna aerial classifications into cryptographically sealed ecological credits were completely unaddressed in surveyed prior art.
@@ -126,7 +126,7 @@ FALCON establishes novel system and method claims:
 The model training dataset comprises 12 distinct invertebrate taxa commonly encountered in agricultural and terrestrial ecosystems, linked to the [Agricultural Pests Image Dataset (Kaggle)](https://www.kaggle.com/datasets/fihmeh/agricultural-pests-image-dataset), supplemented by representation learning transfer from [IP102](https://github.com/xpwu95/IP102) and [AIDN](https://doi.org/10.3390/rs17060962).
 
 ### 5.2 Functional Ecological Guild Mapping
-Rather than treating all invertebrates uniformly, FALCON groups the 12 classes into four functional ecological guilds:
+FALCON categorizes the 12 observed invertebrate classes into four functional ecological guilds based on their agroecological roles:
 
 | Ecological Guild | Included Classes | Ecological Function & Role |
 | :--- | :--- | :--- |
@@ -318,17 +318,17 @@ Execution of `python src/simulate_audit.py` over a 15.0-hectare parcel across fi
 
 ## 11. Regulatory, Compliance & Environmental Market Impact
 
-FALCON directly integrates with international environmental and financial accounting frameworks:
-* **Verra Nature Framework & Plan Vivo:** Provides empirical, unit-level invertebrate monitoring to support biodiversity credit issuance.
-* **Taskforce on Nature-related Financial Disclosures (TNFD):** Enables corporations to report localized ecosystem health with cryptographic assurance.
-* **UK Biodiversity Net Gain (BNG):** Delivers standardized, repeatable faunal condition scores to satisfy mandatory 10% ecological uplift requirements.
-* **Agricultural Premium Pricing:** Enables organic and regenerative agricultural producers to certify chemical-free ecological balance and access premium commodity markets.
+The audit outputs produced by FALCON align directly with current environmental reporting frameworks and nature credit registries:
+- *Verra Nature Framework and Plan Vivo:* The ledger supplies the empirical, individual-level invertebrate counts and spatial transects required to substantiate nature credit claims.
+- *Taskforce on Nature-related Financial Disclosures (TNFD):* Corporate landowners can disclose localized biodiversity health metrics supported by immutable SHA-256 proofs.
+- *UK Biodiversity Net Gain (BNG):* Delivers repeatable, field-level faunal condition measurements to satisfy statutory 10% ecological uplift requirements on development and agricultural parcels.
+- *Regenerative Agriculture Certification:* Farmers and land stewards can document balanced pollinator-to-pest ratios (PPR ≥ 2.0) and soil biological activity without relying on subjective self-reporting.
 
 ---
 
 ## 12. Conclusion
 
-The FALCON project has achieved 100% implementation completion. By transitioning from a conventional agricultural sprayer to an autonomous biodiversity auditing platform, the project delivers a novel synthesis of robotics, computer vision, mathematical ecology, and cryptographic data integrity. The system successfully demonstrates automated low-altitude invertebrate classification, empirical faunal metric derivation, standardized Green Credit Unit issuance, and tamper-evident audit logging. The complete codebase, CAD models, trained neural weights, and verification test suites are operational and publicly maintained in the project repository.
+The FALCON engineering project has reached 100% implementation completion. Expanding beyond agricultural pest scouting, the platform establishes that a lightweight drone running edge computer vision can survey ground-level micro-fauna, compute empirical diversity metrics, and issue cryptographically verifiable nature credits. Autonomous simulations and validation test suites confirmed the complete data flow: classifying 12 invertebrate taxa into functional ecological guilds, calculating Shannon-Wiener and pollinator-to-pest ratios, logging sequential SHA-256 blocks, and exporting GIS-compatible audit certificates. All CAD models, trained weights, calculation libraries, and verification routines are operational in the project repository.
 
 ---
 
