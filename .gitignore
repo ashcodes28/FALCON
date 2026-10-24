@@ -21,3 +21,5 @@ audit_transect.geojson
 real_audit_certificate.json
 real_audit_transect.geojson
 _temp_report.pdf
+_temp_body.pdf
+_temp_*.pdf

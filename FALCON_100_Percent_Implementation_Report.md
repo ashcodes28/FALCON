@@ -57,7 +57,7 @@
 
 This report documents the completed 100% implementation of the FALCON autonomous unmanned aerial system (UAS). Originating as an aerial pest surveillance project, FALCON executed an architectural pivot into an autonomous terrestrial biodiversity auditing and green credit issuance platform. The system addresses a fundamental limitation in carbon-plus and Biodiversity Net-Gain (BNG) markets: satellite remote sensing captures only vegetative canopy reflection (NDVI) rather than living biological diversity, while manual ground surveys cannot scale economically across broad agricultural tracts.
 
-FALCON integrates custom UAV hardware CAD, lightweight edge computer vision (YOLOv11n operating at 1024×1024 resolution), and an automated mathematical ecology engine. It classifies 12 invertebrate taxa into four functional guilds—pollinators, biocontrol predators, soil detritivores, and herbivores—to compute the Shannon-Wiener Faunal Diversity Index ($H'$), the Pollinator-to-Pest Ratio (PPR), and a soil bioturbation proxy score. These indices are synthesized into a standardized Ecological Quality Score ($Q$), benchmarked against pre-intervention degraded baselines ($\Delta Q$), and converted directly into certified Green Credit Units (GCUs).
+FALCON integrates custom UAV hardware CAD, lightweight edge computer vision (YOLOv11n operating at 1024×1024 resolution), and an automated mathematical ecology engine. It classifies 12 invertebrate taxa into four functional guilds—pollinators, biocontrol predators, soil detritivores, and herbivores—to compute the Shannon-Wiener Faunal Diversity Index (H'), the Pollinator-to-Pest Ratio (PPR), and a soil bioturbation proxy score. These indices are synthesized into a standardized Ecological Quality Score (Q), benchmarked against pre-intervention degraded baselines (ΔQ), and converted directly into certified Green Credit Units (GCUs).
 
 Every observation waypoint is sealed within a sequential SHA-256 cryptographic blockchain ledger, ensuring tamper-evident data integrity for carbon registries and credit underwriters. Full system validation was achieved through a multi-waypoint flight audit simulation over a 15-hectare parcel, awarding 10.665 net Green Credit Units under a certified Tier-AAA rating.
 
@@ -73,7 +73,7 @@ However, the Monitoring, Reporting, and Verification (MRV) of biodiversity faces
 ### 2.2 Objectives
 1. Implement a lightweight deep learning detector (YOLOv11n) trained on 1024×1024 resolution to classify 12 ground and foliage invertebrate taxa.
 2. Group detected taxa into functional ecological guilds to quantify ecosystem service delivery rather than treating all invertebrates as uniform targets.
-3. Formulate and implement mathematical indices for faunal biodiversity ($H'$), pollinator balance (PPR), and soil surface biological health.
+3. Formulate and implement mathematical indices for faunal biodiversity (H'), pollinator balance (PPR), and soil surface biological health.
 4. Establish an automated Green Credit Unit (GCU) calculation engine translating ecological uplift into tradeable, accredited units.
 5. Engineer a tamper-evident sequential SHA-256 cryptographic audit ledger that exports standardized machine-readable certificates (`audit_certificate.json`) and geospatial vector layers (`audit_transect.geojson`).
 6. Validate the complete end-to-end architecture through unit testing, anti-tamper security checks, and a simulated 15-hectare aerial flight audit.
@@ -96,8 +96,8 @@ Every planned work package across the project timeline has reached completion.
 | **5. Edge Model Development & Optimization** | Lightweight YOLOv11n (5.56 MB) at 1024×1024 resolution | Completed | 10% |
 | **6. Airframe & Payload Bay Mechanical CAD** | 3D CAD modeling of airframe, gimbal mount, and electronics bay | Completed | 10% |
 | **7. Ecological Guild Classification Engine** | 4-guild functional mapping (Pollinators, Predators, Soil, Herbivores) | Completed | 10% |
-| **8. Mathematical Biodiversity Engine** | Shannon-Wiener $H'$, Simpson's $1-D$, PPR, and soil bioturbation scoring | Completed | 10% |
-| **9. Green Credit Unit (GCU) Formulation** | Quality score $Q$, net uplift $\Delta Q$, area scaling, 5 accreditation tiers | Completed | 10% |
+| **8. Mathematical Biodiversity Engine** | Shannon-Wiener H', Simpson's 1-D, PPR, and soil bioturbation scoring | Completed | 10% |
+| **9. Green Credit Unit (GCU) Formulation** | Quality score Q, net uplift Delta-Q, area scaling, 5 accreditation tiers | Completed | 10% |
 | **10. Cryptographic Audit Ledger & Exports** | SHA-256 sequential chaining, `audit_certificate.json`, GeoJSON exporter | Completed | 10% |
 | **11. System Validation & Flight Simulation** | Automated test suite (`biodiversity_engine.py`), flight trial (`simulate_audit.py`) | Completed | 5% |
 | **Total** | **Full System Implementation** | **100% Completed** | **100%** |
@@ -172,7 +172,7 @@ The mechanical airframe (detailed in [`CAD Images/`](CAD%20Images/)) incorporate
 1. Downward gimbal camera captures 1024×1024 frames at 3–8 m AGL.
 2. Edge YOLOv11n performs inference, outputting bounding coordinates and confidence scores.
 3. The biodiversity calculation engine classifies detections into ecological guilds.
-4. Mathematical routines compute $H'$, PPR, and soil vitality.
+4. Mathematical routines compute H', PPR, and soil vitality.
 5. The cryptographic ledger generates a sequentially hashed block.
 6. Real-time metrics are streamed to the ground station HUD and written to persistent storage.
 
@@ -183,42 +183,79 @@ The mechanical airframe (detailed in [`CAD Images/`](CAD%20Images/)) incorporate
 
 ## 8. Mathematical Biodiversity Engine & Green Credit Formulation
 
-### 8.1 Shannon-Wiener Faunal Diversity Index ($H'$)
-Quantifies species richness and relative abundance evenness across the surveyed parcel:
-$$H' = -\sum_{i=1}^{S} p_i \ln p_i$$
-where $S$ is the total number of observed taxa and $p_i = \frac{n_i}{N}$. The theoretical maximum for 12 classes is $\ln(12) \approx 2.4849$.
+### 8.1 Shannon-Wiener Faunal Diversity Index (H')
+Quantifies invertebrate species richness and relative abundance evenness across the surveyed parcel:
 
-### 8.2 Simpson's Diversity Index ($1 - D$)
-Measures the probability that two randomly sampled invertebrates belong to different taxa:
-$$1 - D = 1 - \sum_{i=1}^{S} p_i^2$$
+> **Equation 8.1 (Shannon-Wiener Diversity Index):**  
+> **H' = − ∑ [ p_i · ln(p_i) ]**  *(summed across all observed taxa i = 1 to S)*  
+> where:  
+> * *S* = Total number of observed taxa (*S* = 12 in the FALCON ecological taxonomy).  
+> * *n_i* = Number of individuals recorded for taxon *i*.  
+> * *N* = Total number of individuals recorded across all taxa (*N = ∑ n_i*).  
+> * *p_i* = Relative abundance proportion of taxon *i* (*p_i = n_i / N*).  
+> 
+> The theoretical maximum diversity for 12 equally distributed taxa is ln(12) ≈ 2.4849. A higher *H'* indicates an ecologically balanced invertebrate community with high evenness and species richness.
+
+### 8.2 Simpson's Diversity Index (1 − D)
+Measures the probability that two randomly sampled invertebrates from the surveyed transect belong to different species, quantifying community evenness and resistance to single-species dominance:
+
+> **Equation 8.2 (Simpson's Diversity Index):**  
+> **1 − D = 1 − ∑ [ p_i² ]**  *(summed across all observed taxa i = 1 to S)*  
+> where *p_i* is the relative abundance proportion of taxon *i*. Values approach 1.0 in highly diverse habitats and drop toward 0.0 under monoculture pest infestations.
 
 ### 8.3 Pollinator-to-Pest Ratio (PPR)
-Directly measures the balance of ecosystem service providers against destructive herbivores:
-$$\text{PPR} = \frac{N_{\text{Bees}} + N_{\text{Wasps}}}{N_{\text{Weevils}} + N_{\text{Caterpillars}} + 10^{-6}}$$
+Directly quantifies the balance of ecosystem service providers (beneficial pollinators and parasitoid biocontrol regulators) against destructive foliage-feeding herbivores:
+
+> **Equation 8.3 (Pollinator-to-Pest Ratio):**  
+> **PPR = (N_Bees + N_Wasps) / (N_Weevils + N_Caterpillars + 10⁻⁶)**  
+> where:  
+> * *N_Bees* and *N_Wasps* represent beneficial pollinating and parasitoid predatory guilds.  
+> * *N_Weevils* and *N_Caterpillars* represent primary economic pest pressures.  
+> * A smoothing constant of 10⁻⁶ in the denominator prevents division-by-zero artifacts in pest-free or heavily suppressed parcels.  
+> 
+> An audited parcel with PPR ≥ 2.0 indicates an ecosystem where natural regulatory mechanisms outweigh herbivore pressure.
 
 ### 8.4 Soil Bioturbation Proxy Score
-Assesses soil biological activity from above-ground observations:
-$$\text{Score}_{\text{soil}} = 1.5 \cdot N_{\text{Earthworms}} + 0.5 \cdot (N_{\text{Slugs}} + N_{\text{Snails}})$$
+Assesses biological activity and structural aeration in the upper soil and litter layer through aerial observation of epigeic detrital macro-invertebrates:
+
+> **Equation 8.4 (Soil Bioturbation Proxy Score):**  
+> **Score_soil = 1.5 · N_Earthworms + 0.5 · (N_Slugs + N_Snails)**  
+> where Earthworms receive a 1.5× biological weighting reflecting their primary role in soil macro-pore creation, water infiltration, and organic matter incorporation, while Gastropods receive a 0.5× weighting as moisture and detrital decomposition indicators.
 
 ### 8.5 Composite Ecological Quality Score & Net Uplift
-The composite Ecological Quality Score ($Q \in [0.0, 1.0]$) synthesizes the biological pillars:
-$$Q = 0.40 \cdot \left(\frac{H'}{\ln 12}\right) + 0.35 \cdot \min\left(\frac{\text{PPR}}{2.0},\, 1.0\right) + 0.25 \cdot \min\left(\frac{\text{Score}_{\text{soil}}}{10},\, 1.0\right)$$
+The composite Ecological Quality Score (*Q* ∈ [0.0, 1.0]) synthesizes the three biological pillars into a single standardized scalar metric:
 
-Net ecological uplift ($\Delta Q$) measures performance over the degraded agricultural baseline ($Q_{\text{baseline}} = 0.20$):
-$$\Delta Q = \max(Q - Q_{\text{baseline}},\, 0.0)$$
+> **Equation 8.5 (Composite Ecological Quality Score):**  
+> **Q = 0.40 · (H' / ln 12) + 0.35 · min(PPR / 2.0, 1.0) + 0.25 · min(Score_soil / 10.0, 1.0)**  
+> where:  
+> * 40% weight is assigned to overall community diversity and evenness (*H'* normalized by its theoretical maximum ln(12) ≈ 2.4849).  
+> * 35% weight is assigned to the functional ecosystem balance between pollinators/predators and pests (PPR normalized to 2.0).  
+> * 25% weight is assigned to epigeic soil biological activity (Score_soil normalized to 10.0).  
+
+Net ecological uplift (ΔQ) measures verified ecological gain above the degraded agricultural monoculture baseline (*Q_baseline* = 0.20):
+
+> **Equation 8.6 (Net Ecological Uplift):**  
+> **ΔQ = max(Q − Q_baseline, 0.0)**  
+> Ensuring that credits are only issued for verified ecological additionality above the regional degraded benchmark.
 
 ### 8.6 Standardized Green Credit Units & Accreditation Tiers
-Credits are issued on a per-hectare uplift basis:
-$$\text{Gross GCU} = \text{Surveyed Area (ha)} \times Q$$
-$$\mathbf{\text{Net Awarded GCU}} = \text{Surveyed Area (ha)} \times \Delta Q$$
+Credits are issued on a per-hectare uplift basis, directly tying financial issuance to physical land area and verifiable biodiversity additionality:
 
-| Quality Score ($Q$) | Accreditation Tier | Classification |
+> **Equation 8.7 (Gross Green Credit Units):**  
+> **Gross GCU = Surveyed Area (ha) × Q**  
+
+> **Equation 8.8 (Net Certified Green Credit Units Awarded):**  
+> **Net Awarded GCU = Surveyed Area (ha) × ΔQ**  
+
+Audited parcels are classified into five standardized accreditation tiers based on their certified Ecological Quality Score (*Q*):
+
+| Quality Score (Q) Range | Accreditation Tier | Ecological Classification & Market Status |
 | :--- | :--- | :--- |
-| **$Q \ge 0.80$** | **Tier-AAA** | Exemplary Biodiversity Net-Gain |
-| **$0.65 \le Q < 0.80$** | **Tier-AA** | High Ecological Integrity |
-| **$0.50 \le Q < 0.65$** | **Tier-A** | Moderate Ecological Value |
-| **$0.35 \le Q < 0.50$** | **Tier-B** | Early Regenerative Transition |
-| **$Q < 0.35$** | **Tier-C** | Depleted / Sub-Baseline Monoculture |
+| **Q ≥ 0.80** | **Tier-AAA** | Exemplary Biodiversity Net-Gain (Premium market issuance) |
+| **0.65 ≤ Q < 0.80** | **Tier-AA** | High Ecological Integrity (Standard nature credit issuance) |
+| **0.50 ≤ Q < 0.65** | **Tier-A** | Moderate Ecological Value (Transitional conservation credit) |
+| **0.35 ≤ Q < 0.50** | **Tier-B** | Early Regenerative Transition (Monitoring credit) |
+| **Q < 0.35** | **Tier-C** | Depleted / Sub-Baseline Monoculture (Ineligible for credit issuance) |
 
 ---
 
